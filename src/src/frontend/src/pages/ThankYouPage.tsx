@@ -40,11 +40,6 @@ export default function ThankYouPage() {
       });
       sessionStorage.setItem(`purchase_tracked_${orderId}`, "true");
     }
-
-    // Automatically redirect to WhatsApp with "hi i paid" message
-    const message = encodeURIComponent("hi i paid");
-    const whatsappUrl = `https://wa.me/919622655116?text=${message}`;
-    window.location.href = whatsappUrl;
   }, [orderId, purchaseValue, planName]);
 
   const getPlanInstructions = () => {
@@ -194,17 +189,30 @@ export default function ThankYouPage() {
             </div>
 
             <div className="pt-6 border-t mt-6">
-              <p className="text-sm text-muted-foreground mb-4 text-center font-medium">
-                👇 Click below to get your Canva Pro access now 👇
-              </p>
+              {/* 🚨 GIANT PULSING ALERT BUTTON 🚨 */}
+              <div className="bg-gradient-to-r from-red-500 via-orange-500 to-red-500 p-1 rounded-xl mb-4 animate-pulse">
+                <div className="bg-white dark:bg-background p-4 rounded-lg">
+                  <p className="text-center text-xl font-bold text-red-600 dark:text-red-500 mb-2 animate-bounce">
+                    🚨 IMPORTANT: CLICK BELOW NOW! 🚨
+                  </p>
+                  <p className="text-center text-sm text-muted-foreground mb-3">
+                    Message us on WhatsApp to activate your Canva Pro account instantly
+                  </p>
+                </div>
+              </div>
+              
               <Button 
                 onClick={handleWhatsAppClick}
                 size="lg"
-                className="w-full bg-success hover:bg-success/90 text-success-foreground text-base"
+                className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white text-xl py-8 shadow-2xl hover:scale-105 transition-all duration-300 font-bold border-4 border-green-400 animate-pulse"
               >
-                <MessageCircle className="mr-2 h-5 w-5" />
-                Get Access via WhatsApp: 96226 55116
+                <MessageCircle className="mr-3 h-8 w-8" />
+                💬 Click Here to Get Access via WhatsApp
               </Button>
+              
+              <p className="text-center text-sm text-muted-foreground mt-3 font-medium">
+                📞 We'll respond within 5 minutes: 96226 55116
+              </p>
             </div>
           </CardContent>
         </Card>

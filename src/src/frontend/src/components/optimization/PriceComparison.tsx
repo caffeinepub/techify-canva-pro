@@ -40,7 +40,7 @@ export default function PriceComparison() {
                     <td className="px-4 md:px-6 py-4 text-center">
                       <div className="flex flex-col items-center">
                         <span className="text-lg md:text-xl font-bold text-destructive line-through">
-                          ₹1,099
+                          ₹4,999
                         </span>
                       </div>
                     </td>
@@ -50,7 +50,7 @@ export default function PriceComparison() {
                           ₹299
                         </span>
                         <span className="text-xs md:text-sm text-success font-bold mt-1">
-                          Save ₹800!
+                          Save ₹4,700!
                         </span>
                       </div>
                     </td>
@@ -125,7 +125,7 @@ export default function PriceComparison() {
           {/* Value Statement */}
           <div className="text-center mt-8">
             <p className="text-lg md:text-xl font-bold text-success">
-              💰 Save over 70% with Techify!
+              💰 Save over 94% with Techify!
             </p>
           </div>
         </div>

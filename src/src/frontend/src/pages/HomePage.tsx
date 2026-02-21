@@ -13,7 +13,6 @@ import Footer from "@/components/sections/Footer";
 import FixedPricingFooter from "@/components/sections/FixedPricingFooter";
 import StickyTopBanner from "@/components/optimization/StickyTopBanner";
 import LivePurchasePopup from "@/components/urgency/LivePurchasePopup";
-import ExitIntentModal from "@/components/optimization/ExitIntentModal";
 
 export default function HomePage() {
   return (
@@ -42,9 +41,6 @@ export default function HomePage() {
       
       {/* Live Purchase Popups */}
       <LivePurchasePopup />
-      
-      {/* Exit Intent Modal */}
-      <ExitIntentModal />
     </div>
   );
 }

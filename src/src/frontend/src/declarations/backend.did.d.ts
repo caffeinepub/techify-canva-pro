@@ -10,11 +10,37 @@ import type { ActorMethod } from '@icp-sdk/core/agent';
 import type { IDL } from '@icp-sdk/core/candid';
 import type { Principal } from '@icp-sdk/core/principal';
 
-export interface Purchase { 'customerName' : string, 'timestamp' : Time }
+export interface PaymentRecord {
+  'customerName' : string,
+  'status' : PaymentStatus,
+  'plan' : string,
+  'email' : string,
+  'timestamp' : Time,
+  'phone' : string,
+  'amount' : bigint,
+  'transactionId' : [] | [string],
+}
+export type PaymentStatus = { 'Failed' : null } |
+  { 'Completed' : null } |
+  { 'Pending' : null };
 export type Time = bigint;
 export interface _SERVICE {
-  'getRecentPurchases' : ActorMethod<[bigint], Array<Purchase>>,
-  'recordPurchase' : ActorMethod<[string], undefined>,
+  'createPaymentRequest' : ActorMethod<
+    [string, string, string, string, bigint],
+    string
+  >,
+  'getAllCompletedPayments' : ActorMethod<[], Array<PaymentRecord>>,
+  'getAllPayments' : ActorMethod<[], Array<PaymentRecord>>,
+  'getPaymentRecord' : ActorMethod<[string], [] | [PaymentRecord]>,
+  'getPaymentsByStatus' : ActorMethod<[PaymentStatus], Array<PaymentRecord>>,
+  'getPaymentsCountByStatus' : ActorMethod<[PaymentStatus], bigint>,
+  'getRecentPayments' : ActorMethod<[bigint], Array<PaymentRecord>>,
+  'getTotalPaymentsCount' : ActorMethod<[], bigint>,
+  'paymentExists' : ActorMethod<[string], boolean>,
+  'updatePaymentStatusWithTransactionId' : ActorMethod<
+    [string, string, PaymentStatus, [] | [string]],
+    undefined
+  >,
 }
 export declare const idlService: IDL.ServiceClass;
 export declare const idlInitArgs: IDL.Type[];

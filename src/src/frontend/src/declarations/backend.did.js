@@ -8,29 +8,115 @@
 
 import { IDL } from '@icp-sdk/core/candid';
 
+export const PaymentStatus = IDL.Variant({
+  'Failed' : IDL.Null,
+  'Completed' : IDL.Null,
+  'Pending' : IDL.Null,
+});
 export const Time = IDL.Int;
-export const Purchase = IDL.Record({
+export const PaymentRecord = IDL.Record({
   'customerName' : IDL.Text,
+  'status' : PaymentStatus,
+  'plan' : IDL.Text,
+  'email' : IDL.Text,
   'timestamp' : Time,
+  'phone' : IDL.Text,
+  'amount' : IDL.Nat,
+  'transactionId' : IDL.Opt(IDL.Text),
 });
 
 export const idlService = IDL.Service({
-  'getRecentPurchases' : IDL.Func([IDL.Nat], [IDL.Vec(Purchase)], ['query']),
-  'recordPurchase' : IDL.Func([IDL.Text], [], []),
+  'createPaymentRequest' : IDL.Func(
+      [IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Nat],
+      [IDL.Text],
+      [],
+    ),
+  'getAllCompletedPayments' : IDL.Func([], [IDL.Vec(PaymentRecord)], ['query']),
+  'getAllPayments' : IDL.Func([], [IDL.Vec(PaymentRecord)], ['query']),
+  'getPaymentRecord' : IDL.Func(
+      [IDL.Text],
+      [IDL.Opt(PaymentRecord)],
+      ['query'],
+    ),
+  'getPaymentsByStatus' : IDL.Func(
+      [PaymentStatus],
+      [IDL.Vec(PaymentRecord)],
+      ['query'],
+    ),
+  'getPaymentsCountByStatus' : IDL.Func([PaymentStatus], [IDL.Nat], ['query']),
+  'getRecentPayments' : IDL.Func(
+      [IDL.Nat],
+      [IDL.Vec(PaymentRecord)],
+      ['query'],
+    ),
+  'getTotalPaymentsCount' : IDL.Func([], [IDL.Nat], ['query']),
+  'paymentExists' : IDL.Func([IDL.Text], [IDL.Bool], ['query']),
+  'updatePaymentStatusWithTransactionId' : IDL.Func(
+      [IDL.Text, IDL.Text, PaymentStatus, IDL.Opt(IDL.Text)],
+      [],
+      [],
+    ),
 });
 
 export const idlInitArgs = [];
 
 export const idlFactory = ({ IDL }) => {
+  const PaymentStatus = IDL.Variant({
+    'Failed' : IDL.Null,
+    'Completed' : IDL.Null,
+    'Pending' : IDL.Null,
+  });
   const Time = IDL.Int;
-  const Purchase = IDL.Record({
+  const PaymentRecord = IDL.Record({
     'customerName' : IDL.Text,
+    'status' : PaymentStatus,
+    'plan' : IDL.Text,
+    'email' : IDL.Text,
     'timestamp' : Time,
+    'phone' : IDL.Text,
+    'amount' : IDL.Nat,
+    'transactionId' : IDL.Opt(IDL.Text),
   });
   
   return IDL.Service({
-    'getRecentPurchases' : IDL.Func([IDL.Nat], [IDL.Vec(Purchase)], ['query']),
-    'recordPurchase' : IDL.Func([IDL.Text], [], []),
+    'createPaymentRequest' : IDL.Func(
+        [IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Nat],
+        [IDL.Text],
+        [],
+      ),
+    'getAllCompletedPayments' : IDL.Func(
+        [],
+        [IDL.Vec(PaymentRecord)],
+        ['query'],
+      ),
+    'getAllPayments' : IDL.Func([], [IDL.Vec(PaymentRecord)], ['query']),
+    'getPaymentRecord' : IDL.Func(
+        [IDL.Text],
+        [IDL.Opt(PaymentRecord)],
+        ['query'],
+      ),
+    'getPaymentsByStatus' : IDL.Func(
+        [PaymentStatus],
+        [IDL.Vec(PaymentRecord)],
+        ['query'],
+      ),
+    'getPaymentsCountByStatus' : IDL.Func(
+        [PaymentStatus],
+        [IDL.Nat],
+        ['query'],
+      ),
+    'getRecentPayments' : IDL.Func(
+        [IDL.Nat],
+        [IDL.Vec(PaymentRecord)],
+        ['query'],
+      ),
+    'getTotalPaymentsCount' : IDL.Func([], [IDL.Nat], ['query']),
+    'paymentExists' : IDL.Func([IDL.Text], [IDL.Bool], ['query']),
+    'updatePaymentStatusWithTransactionId' : IDL.Func(
+        [IDL.Text, IDL.Text, PaymentStatus, IDL.Opt(IDL.Text)],
+        [],
+        [],
+      ),
   });
 };
 

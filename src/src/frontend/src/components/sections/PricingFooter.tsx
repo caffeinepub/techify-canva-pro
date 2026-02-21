@@ -14,7 +14,7 @@ export default function PricingFooter() {
     const monthlyScript = document.createElement("script");
     monthlyScript.src = "https://checkout.razorpay.com/v1/payment-button.js";
     monthlyScript.setAttribute("data-payment_button_id", "pl_SItIRZSgxWFNjq");
-    monthlyScript.setAttribute("data-redirect_url", `${baseUrl}/thank-you?amount=49`);
+    monthlyScript.setAttribute("data-redirect_url", `${baseUrl}/thank-you?plan=Monthly%20Plan&amount=49`);
     monthlyScript.async = true;
 
     if (monthlyFormRef.current) {
@@ -25,7 +25,7 @@ export default function PricingFooter() {
     const yearlyScript = document.createElement("script");
     yearlyScript.src = "https://checkout.razorpay.com/v1/payment-button.js";
     yearlyScript.setAttribute("data-payment_button_id", "pl_SIrXp6zPDOixDu");
-    yearlyScript.setAttribute("data-redirect_url", `${baseUrl}/thank-you?amount=299`);
+    yearlyScript.setAttribute("data-redirect_url", `${baseUrl}/thank-you?plan=Yearly%20Plan&amount=299`);
     yearlyScript.async = true;
 
     if (yearlyFormRef.current) {
@@ -36,7 +36,7 @@ export default function PricingFooter() {
     const resellerScript = document.createElement("script");
     resellerScript.src = "https://checkout.razorpay.com/v1/payment-button.js";
     resellerScript.setAttribute("data-payment_button_id", "pl_SItKXEzqislZKZ");
-    resellerScript.setAttribute("data-redirect_url", `${baseUrl}/thank-you?amount=699`);
+    resellerScript.setAttribute("data-redirect_url", `${baseUrl}/thank-you?plan=Reseller%20Plan&amount=699`);
     resellerScript.async = true;
 
     if (resellerFormRef.current) {

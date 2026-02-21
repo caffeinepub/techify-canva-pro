@@ -1,6 +1,7 @@
 import { createRouter, RouterProvider, createRoute, createRootRoute, Outlet } from "@tanstack/react-router";
 import HomePage from "./pages/HomePage";
 import ThankYouPage from "./pages/ThankYouPage";
+import AdminDashboard from "./pages/AdminDashboard";
 import { Toaster } from "@/components/ui/sonner";
 
 const rootRoute = createRootRoute({
@@ -24,7 +25,13 @@ const thankYouRoute = createRoute({
   component: ThankYouPage,
 });
 
-const routeTree = rootRoute.addChildren([indexRoute, thankYouRoute]);
+const adminRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/admin",
+  component: AdminDashboard,
+});
+
+const routeTree = rootRoute.addChildren([indexRoute, thankYouRoute, adminRoute]);
 
 const router = createRouter({
   routeTree,

@@ -89,45 +89,252 @@ export class ExternalBlob {
         return this;
     }
 }
-export interface Purchase {
-    customerName: string;
-    timestamp: Time;
-}
 export type Time = bigint;
-export interface backendInterface {
-    getRecentPurchases(limit: bigint): Promise<Array<Purchase>>;
-    recordPurchase(customerName: string): Promise<void>;
+export interface PaymentRecord {
+    customerName: string;
+    status: PaymentStatus;
+    plan: string;
+    email: string;
+    timestamp: Time;
+    phone: string;
+    amount: bigint;
+    transactionId?: string;
 }
+export enum PaymentStatus {
+    Failed = "Failed",
+    Completed = "Completed",
+    Pending = "Pending"
+}
+export interface backendInterface {
+    createPaymentRequest(customerName: string, email: string, phone: string, plan: string, amount: bigint): Promise<string>;
+    getAllCompletedPayments(): Promise<Array<PaymentRecord>>;
+    getAllPayments(): Promise<Array<PaymentRecord>>;
+    getPaymentRecord(orderId: string): Promise<PaymentRecord | null>;
+    getPaymentsByStatus(status: PaymentStatus): Promise<Array<PaymentRecord>>;
+    getPaymentsCountByStatus(status: PaymentStatus): Promise<bigint>;
+    getRecentPayments(limit: bigint): Promise<Array<PaymentRecord>>;
+    getTotalPaymentsCount(): Promise<bigint>;
+    paymentExists(orderId: string): Promise<boolean>;
+    updatePaymentStatusWithTransactionId(adminPasswordInput: string, orderId: string, status: PaymentStatus, transactionId: string | null): Promise<void>;
+}
+import type { PaymentRecord as _PaymentRecord, PaymentStatus as _PaymentStatus, Time as _Time } from "./declarations/backend.did.d.ts";
 export class Backend implements backendInterface {
     constructor(private actor: ActorSubclass<_SERVICE>, private _uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, private _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, private processError?: (error: unknown) => never){}
-    async getRecentPurchases(arg0: bigint): Promise<Array<Purchase>> {
+    async createPaymentRequest(arg0: string, arg1: string, arg2: string, arg3: string, arg4: bigint): Promise<string> {
         if (this.processError) {
             try {
-                const result = await this.actor.getRecentPurchases(arg0);
+                const result = await this.actor.createPaymentRequest(arg0, arg1, arg2, arg3, arg4);
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.getRecentPurchases(arg0);
+            const result = await this.actor.createPaymentRequest(arg0, arg1, arg2, arg3, arg4);
             return result;
         }
     }
-    async recordPurchase(arg0: string): Promise<void> {
+    async getAllCompletedPayments(): Promise<Array<PaymentRecord>> {
         if (this.processError) {
             try {
-                const result = await this.actor.recordPurchase(arg0);
+                const result = await this.actor.getAllCompletedPayments();
+                return from_candid_vec_n1(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getAllCompletedPayments();
+            return from_candid_vec_n1(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async getAllPayments(): Promise<Array<PaymentRecord>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getAllPayments();
+                return from_candid_vec_n1(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getAllPayments();
+            return from_candid_vec_n1(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async getPaymentRecord(arg0: string): Promise<PaymentRecord | null> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getPaymentRecord(arg0);
+                return from_candid_opt_n7(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getPaymentRecord(arg0);
+            return from_candid_opt_n7(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async getPaymentsByStatus(arg0: PaymentStatus): Promise<Array<PaymentRecord>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getPaymentsByStatus(to_candid_PaymentStatus_n8(this._uploadFile, this._downloadFile, arg0));
+                return from_candid_vec_n1(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getPaymentsByStatus(to_candid_PaymentStatus_n8(this._uploadFile, this._downloadFile, arg0));
+            return from_candid_vec_n1(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async getPaymentsCountByStatus(arg0: PaymentStatus): Promise<bigint> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getPaymentsCountByStatus(to_candid_PaymentStatus_n8(this._uploadFile, this._downloadFile, arg0));
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.recordPurchase(arg0);
+            const result = await this.actor.getPaymentsCountByStatus(to_candid_PaymentStatus_n8(this._uploadFile, this._downloadFile, arg0));
             return result;
         }
     }
+    async getRecentPayments(arg0: bigint): Promise<Array<PaymentRecord>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getRecentPayments(arg0);
+                return from_candid_vec_n1(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getRecentPayments(arg0);
+            return from_candid_vec_n1(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async getTotalPaymentsCount(): Promise<bigint> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getTotalPaymentsCount();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getTotalPaymentsCount();
+            return result;
+        }
+    }
+    async paymentExists(arg0: string): Promise<boolean> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.paymentExists(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.paymentExists(arg0);
+            return result;
+        }
+    }
+    async updatePaymentStatusWithTransactionId(arg0: string, arg1: string, arg2: PaymentStatus, arg3: string | null): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.updatePaymentStatusWithTransactionId(arg0, arg1, to_candid_PaymentStatus_n8(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n10(this._uploadFile, this._downloadFile, arg3));
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.updatePaymentStatusWithTransactionId(arg0, arg1, to_candid_PaymentStatus_n8(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n10(this._uploadFile, this._downloadFile, arg3));
+            return result;
+        }
+    }
+}
+function from_candid_PaymentRecord_n2(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _PaymentRecord): PaymentRecord {
+    return from_candid_record_n3(_uploadFile, _downloadFile, value);
+}
+function from_candid_PaymentStatus_n4(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _PaymentStatus): PaymentStatus {
+    return from_candid_variant_n5(_uploadFile, _downloadFile, value);
+}
+function from_candid_opt_n6(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [string]): string | null {
+    return value.length === 0 ? null : value[0];
+}
+function from_candid_opt_n7(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [_PaymentRecord]): PaymentRecord | null {
+    return value.length === 0 ? null : from_candid_PaymentRecord_n2(_uploadFile, _downloadFile, value[0]);
+}
+function from_candid_record_n3(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+    customerName: string;
+    status: _PaymentStatus;
+    plan: string;
+    email: string;
+    timestamp: _Time;
+    phone: string;
+    amount: bigint;
+    transactionId: [] | [string];
+}): {
+    customerName: string;
+    status: PaymentStatus;
+    plan: string;
+    email: string;
+    timestamp: Time;
+    phone: string;
+    amount: bigint;
+    transactionId?: string;
+} {
+    return {
+        customerName: value.customerName,
+        status: from_candid_PaymentStatus_n4(_uploadFile, _downloadFile, value.status),
+        plan: value.plan,
+        email: value.email,
+        timestamp: value.timestamp,
+        phone: value.phone,
+        amount: value.amount,
+        transactionId: record_opt_to_undefined(from_candid_opt_n6(_uploadFile, _downloadFile, value.transactionId))
+    };
+}
+function from_candid_variant_n5(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+    Failed: null;
+} | {
+    Completed: null;
+} | {
+    Pending: null;
+}): PaymentStatus {
+    return "Failed" in value ? PaymentStatus.Failed : "Completed" in value ? PaymentStatus.Completed : "Pending" in value ? PaymentStatus.Pending : value;
+}
+function from_candid_vec_n1(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Array<_PaymentRecord>): Array<PaymentRecord> {
+    return value.map((x)=>from_candid_PaymentRecord_n2(_uploadFile, _downloadFile, x));
+}
+function to_candid_PaymentStatus_n8(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: PaymentStatus): _PaymentStatus {
+    return to_candid_variant_n9(_uploadFile, _downloadFile, value);
+}
+function to_candid_opt_n10(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: string | null): [] | [string] {
+    return value === null ? candid_none() : candid_some(value);
+}
+function to_candid_variant_n9(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: PaymentStatus): {
+    Failed: null;
+} | {
+    Completed: null;
+} | {
+    Pending: null;
+} {
+    return value == PaymentStatus.Failed ? {
+        Failed: null
+    } : value == PaymentStatus.Completed ? {
+        Completed: null
+    } : value == PaymentStatus.Pending ? {
+        Pending: null
+    } : value;
 }
 export interface CreateActorOptions {
     agent?: Agent;

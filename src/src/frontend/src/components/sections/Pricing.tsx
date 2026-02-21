@@ -1,8 +1,7 @@
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { Check, Sparkles } from "lucide-react";
 
 export default function Pricing() {
-  const [scriptsLoaded, setScriptsLoaded] = useState(false);
   const monthlyFormRef = useRef<HTMLFormElement>(null);
   const yearlyFormRef = useRef<HTMLFormElement>(null);
   const resellerFormRef = useRef<HTMLFormElement>(null);
@@ -11,38 +10,51 @@ export default function Pricing() {
     // Get current base URL for redirect
     const baseUrl = window.location.origin;
 
-    // Load all Razorpay payment button scripts with custom redirect URLs
+    // Load Monthly Razorpay button with redirect URL
     const monthlyScript = document.createElement("script");
     monthlyScript.src = "https://checkout.razorpay.com/v1/payment-button.js";
     monthlyScript.setAttribute("data-payment_button_id", "pl_SItIRZSgxWFNjq");
-    monthlyScript.setAttribute("data-redirect_url", `${baseUrl}/thank-you?amount=49`);
+    monthlyScript.setAttribute("data-redirect_url", `${baseUrl}/thank-you?plan=Monthly%20Plan&amount=49`);
     monthlyScript.async = true;
 
-    const yearlyScript = document.createElement("script");
-    yearlyScript.src = "https://checkout.razorpay.com/v1/payment-button.js";
-    yearlyScript.setAttribute("data-payment_button_id", "pl_SIrXp6zPDOixDu");
-    yearlyScript.setAttribute("data-redirect_url", `${baseUrl}/thank-you?amount=299`);
-    yearlyScript.async = true;
-
-    const resellerScript = document.createElement("script");
-    resellerScript.src = "https://checkout.razorpay.com/v1/payment-button.js";
-    resellerScript.setAttribute("data-payment_button_id", "pl_SItKXEzqislZKZ");
-    resellerScript.setAttribute("data-redirect_url", `${baseUrl}/thank-you?amount=699`);
-    resellerScript.async = true;
-
-    if (monthlyFormRef.current && !monthlyFormRef.current.querySelector("script")) {
+    if (monthlyFormRef.current) {
       monthlyFormRef.current.appendChild(monthlyScript);
     }
 
-    if (yearlyFormRef.current && !yearlyFormRef.current.querySelector("script")) {
+    // Load Yearly Razorpay button with redirect URL
+    const yearlyScript = document.createElement("script");
+    yearlyScript.src = "https://checkout.razorpay.com/v1/payment-button.js";
+    yearlyScript.setAttribute("data-payment_button_id", "pl_SIrXp6zPDOixDu");
+    yearlyScript.setAttribute("data-redirect_url", `${baseUrl}/thank-you?plan=Yearly%20Plan&amount=299`);
+    yearlyScript.async = true;
+
+    if (yearlyFormRef.current) {
       yearlyFormRef.current.appendChild(yearlyScript);
     }
 
-    if (resellerFormRef.current && !resellerFormRef.current.querySelector("script")) {
+    // Load Reseller Razorpay button with redirect URL
+    const resellerScript = document.createElement("script");
+    resellerScript.src = "https://checkout.razorpay.com/v1/payment-button.js";
+    resellerScript.setAttribute("data-payment_button_id", "pl_SItKXEzqislZKZ");
+    resellerScript.setAttribute("data-redirect_url", `${baseUrl}/thank-you?plan=Reseller%20Plan&amount=699`);
+    resellerScript.async = true;
+
+    if (resellerFormRef.current) {
       resellerFormRef.current.appendChild(resellerScript);
     }
 
-    setScriptsLoaded(true);
+    // Cleanup
+    return () => {
+      if (monthlyFormRef.current && monthlyScript.parentNode) {
+        monthlyScript.parentNode.removeChild(monthlyScript);
+      }
+      if (yearlyFormRef.current && yearlyScript.parentNode) {
+        yearlyScript.parentNode.removeChild(yearlyScript);
+      }
+      if (resellerFormRef.current && resellerScript.parentNode) {
+        resellerScript.parentNode.removeChild(resellerScript);
+      }
+    };
   }, []);
 
   return (

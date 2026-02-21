@@ -1,7 +1,8 @@
-import { useEffect } from "react";
-import { CheckCircle, MessageCircle, Clock, Shield } from "lucide-react";
+import { useEffect, useState } from "react";
+import { CheckCircle, MessageCircle, Clock, Shield, Copy, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { toast } from "sonner";
 
 declare global {
   interface Window {
@@ -10,35 +11,81 @@ declare global {
 }
 
 export default function ThankYouPage() {
-  useEffect(() => {
-    // Parse amount from URL query parameter
-    const urlParams = new URLSearchParams(window.location.search);
-    const amountParam = urlParams.get("amount");
-    
-    // Validate amount - must be one of our 3 plans: 49, 299, or 699
-    let purchaseValue = 299; // Default to yearly plan for backward compatibility
-    
-    if (amountParam) {
-      const parsedAmount = parseInt(amountParam, 10);
-      if (parsedAmount === 49 || parsedAmount === 299 || parsedAmount === 699) {
-        purchaseValue = parsedAmount;
-      }
+  const [copiedOrderId, setCopiedOrderId] = useState(false);
+  
+  // Parse URL parameters
+  const urlParams = new URLSearchParams(window.location.search);
+  const orderId = urlParams.get("orderId") || `ORD${Date.now()}`;
+  const planName = urlParams.get("plan") || "Canva Pro Plan";
+  const amountParam = urlParams.get("amount");
+  
+  // Validate amount
+  let purchaseValue = 299;
+  if (amountParam) {
+    const parsedAmount = parseInt(amountParam, 10);
+    if (parsedAmount === 49 || parsedAmount === 299 || parsedAmount === 699) {
+      purchaseValue = parsedAmount;
     }
-    
+  }
+
+  useEffect(() => {
     // Fire Meta Pixel Purchase event only once per successful payment
-    const hasTrackedPurchase = sessionStorage.getItem("purchase_tracked");
+    const hasTrackedPurchase = sessionStorage.getItem(`purchase_tracked_${orderId}`);
     
-    if (!hasTrackedPurchase && window.fbq) {
+    if (!hasTrackedPurchase && window.fbq && orderId) {
       window.fbq("track", "Purchase", {
         value: purchaseValue,
         currency: "INR",
+        content_name: planName,
       });
-      sessionStorage.setItem("purchase_tracked", "true");
+      sessionStorage.setItem(`purchase_tracked_${orderId}`, "true");
     }
-  }, []);
+
+    // Automatically redirect to WhatsApp with "hi i paid" message
+    const message = encodeURIComponent("hi i paid");
+    const whatsappUrl = `https://wa.me/919622655116?text=${message}`;
+    window.location.href = whatsappUrl;
+  }, [orderId, purchaseValue, planName]);
+
+  const getPlanInstructions = () => {
+    if (planName.toLowerCase().includes("monthly")) {
+      return {
+        title: "1 Month Canva Pro Access",
+        description: "Your Canva Pro account is valid for 1 month from activation.",
+      };
+    } else if (planName.toLowerCase().includes("yearly") || planName.toLowerCase().includes("year")) {
+      return {
+        title: "1 Year Canva Pro Access - Best Value!",
+        description: "Your Canva Pro account is valid for 1 full year from activation.",
+      };
+    } else if (planName.toLowerCase().includes("reseller")) {
+      return {
+        title: "Reseller Business Plan - Start Earning!",
+        description: "Get access to admin panel and start your own Canva Pro reselling business.",
+      };
+    }
+    return {
+      title: "Canva Pro Access",
+      description: "Your Canva Pro account will be activated shortly.",
+    };
+  };
+
+  const planInfo = getPlanInstructions();
 
   const handleWhatsAppClick = () => {
-    window.open("https://wa.me/919622655116", "_blank");
+    const message = encodeURIComponent(
+      `Hi, I completed payment for ${planName}. Order ID: ${orderId}. Amount: ₹${purchaseValue}. Please activate my Canva Pro access. Thank you!`
+    );
+    window.open(`https://wa.me/919622655116?text=${message}`, "_blank");
+  };
+
+  const handleCopyOrderId = () => {
+    if (orderId) {
+      navigator.clipboard.writeText(orderId);
+      setCopiedOrderId(true);
+      toast.success("Order ID copied to clipboard");
+      setTimeout(() => setCopiedOrderId(false), 2000);
+    }
   };
 
   return (
@@ -55,13 +102,56 @@ export default function ThankYouPage() {
             Payment Successful! 🎉
           </h1>
           <p className="text-lg text-muted-foreground">
-            Thank you for choosing Techify for your Canva Pro needs
+            Thank you, valued customer! Your order has been confirmed.
           </p>
         </div>
 
-        {/* Next Steps Card */}
+        {/* Order Details Card */}
+        {orderId && (
+          <Card className="shadow-lg bg-primary/5 border-primary/20">
+            <CardContent className="p-6">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-muted-foreground">Order ID:</span>
+                  <div className="flex items-center gap-2">
+                    <code className="text-sm font-mono font-semibold bg-background px-3 py-1 rounded">
+                      {orderId}
+                    </code>
+                    <Button
+                      onClick={handleCopyOrderId}
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8"
+                    >
+                      {copiedOrderId ? (
+                        <Check className="h-4 w-4 text-success" />
+                      ) : (
+                        <Copy className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-muted-foreground">Plan:</span>
+                  <span className="font-semibold">{planName}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-muted-foreground">Amount Paid:</span>
+                  <span className="text-xl font-display font-bold text-primary">₹{purchaseValue}</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Plan Benefits */}
         <Card className="shadow-lg">
-          <CardContent className="p-6 md:p-8 space-y-6">
+          <CardContent className="p-6">
+            <div className="bg-success/10 border border-success/20 rounded-lg p-4 mb-6">
+              <h3 className="font-semibold text-success mb-1">{planInfo.title}</h3>
+              <p className="text-sm text-muted-foreground">{planInfo.description}</p>
+            </div>
+
             <div>
               <h2 className="text-2xl font-display font-bold mb-4">What Happens Next?</h2>
               <div className="space-y-4">
@@ -70,9 +160,9 @@ export default function ThankYouPage() {
                     <MessageCircle className="h-5 w-5 text-primary" />
                   </div>
                   <div>
-                    <h3 className="font-semibold mb-1">1. Check Your WhatsApp</h3>
+                    <h3 className="font-semibold mb-1">1. Contact Us on WhatsApp</h3>
                     <p className="text-sm text-muted-foreground">
-                      We'll send you a message with your Canva Pro account details within the next 5-10 minutes.
+                      Click the button below to send us your order details on WhatsApp. We'll respond within 5-10 minutes with your account credentials.
                     </p>
                   </div>
                 </div>
@@ -84,7 +174,7 @@ export default function ThankYouPage() {
                   <div>
                     <h3 className="font-semibold mb-1">2. Instant Activation</h3>
                     <p className="text-sm text-muted-foreground">
-                      Your Canva Pro account will be activated immediately. Start creating amazing designs right away!
+                      Your Canva Pro account will be activated immediately after verification. Start creating amazing designs right away!
                     </p>
                   </div>
                 </div>
@@ -96,39 +186,39 @@ export default function ThankYouPage() {
                   <div>
                     <h3 className="font-semibold mb-1">3. 24/7 Support Available</h3>
                     <p className="text-sm text-muted-foreground">
-                      If you face any issues or have questions, our support team is here to help anytime.
+                      If you face any issues or have questions, our support team is here to help anytime on WhatsApp.
                     </p>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="pt-4 border-t">
-              <p className="text-sm text-muted-foreground mb-4">
-                Need immediate assistance? Contact us on WhatsApp:
+            <div className="pt-6 border-t mt-6">
+              <p className="text-sm text-muted-foreground mb-4 text-center font-medium">
+                👇 Click below to get your Canva Pro access now 👇
               </p>
               <Button 
                 onClick={handleWhatsAppClick}
                 size="lg"
-                className="w-full bg-success hover:bg-success/90 text-success-foreground"
+                className="w-full bg-success hover:bg-success/90 text-success-foreground text-base"
               >
                 <MessageCircle className="mr-2 h-5 w-5" />
-                Chat on WhatsApp: 96226 55116
+                Get Access via WhatsApp: 96226 55116
               </Button>
             </div>
           </CardContent>
         </Card>
 
         {/* Additional Info */}
-        <div className="text-center text-sm text-muted-foreground">
-          <p>Please save our WhatsApp number for future support.</p>
-          <p className="mt-2">
-            Didn't receive the message?{" "}
+        <div className="text-center text-sm text-muted-foreground space-y-2">
+          <p className="font-medium">Please save our WhatsApp number for future support.</p>
+          <p>
+            Having trouble?{" "}
             <button 
               onClick={handleWhatsAppClick}
               className="text-primary hover:underline font-medium"
             >
-              Contact us directly
+              Contact us directly on WhatsApp
             </button>
           </p>
         </div>

@@ -10,30 +10,36 @@ export default function FixedPricingFooter() {
   useEffect(() => {
     if (!isExpanded) return;
 
-    // Load Monthly Razorpay button
+    // Get current base URL for redirect
+    const baseUrl = window.location.origin;
+
+    // Load Monthly Razorpay button with redirect URL
     const monthlyScript = document.createElement("script");
     monthlyScript.src = "https://checkout.razorpay.com/v1/payment-button.js";
     monthlyScript.setAttribute("data-payment_button_id", "pl_SItIRZSgxWFNjq");
+    monthlyScript.setAttribute("data-redirect_url", `${baseUrl}/thank-you?amount=49`);
     monthlyScript.async = true;
 
     if (monthlyFormRef.current && !monthlyFormRef.current.querySelector("script")) {
       monthlyFormRef.current.appendChild(monthlyScript);
     }
 
-    // Load Yearly Razorpay button
+    // Load Yearly Razorpay button with redirect URL
     const yearlyScript = document.createElement("script");
     yearlyScript.src = "https://checkout.razorpay.com/v1/payment-button.js";
     yearlyScript.setAttribute("data-payment_button_id", "pl_SIrXp6zPDOixDu");
+    yearlyScript.setAttribute("data-redirect_url", `${baseUrl}/thank-you?amount=299`);
     yearlyScript.async = true;
 
     if (yearlyFormRef.current && !yearlyFormRef.current.querySelector("script")) {
       yearlyFormRef.current.appendChild(yearlyScript);
     }
 
-    // Load Reseller Admin Panel Razorpay button
+    // Load Reseller Admin Panel Razorpay button with redirect URL
     const resellerScript = document.createElement("script");
     resellerScript.src = "https://checkout.razorpay.com/v1/payment-button.js";
     resellerScript.setAttribute("data-payment_button_id", "pl_SItKXEzqislZKZ");
+    resellerScript.setAttribute("data-redirect_url", `${baseUrl}/thank-you?amount=699`);
     resellerScript.async = true;
 
     if (resellerFormRef.current && !resellerFormRef.current.querySelector("script")) {
@@ -47,23 +53,33 @@ export default function FixedPricingFooter() {
       {!isExpanded && (
         <button
           onClick={() => setIsExpanded(true)}
-          className="w-full bg-gradient-to-r from-primary via-accent to-primary text-white py-4 px-6 flex items-center justify-center gap-3 hover:opacity-90 transition-all duration-300 shadow-2xl"
+          className="w-full bg-gradient-to-r from-purple-600 via-pink-600 to-red-600 text-white py-5 px-6 flex items-center justify-center gap-4 hover:opacity-90 transition-all duration-300 shadow-2xl"
         >
-          <span className="text-base md:text-lg font-display font-bold">
-            Canva Pro Subscription starting at just ₹49
-          </span>
-          <ChevronUp className="h-5 w-5 animate-bounce" />
+          <div className="flex flex-col items-center">
+            <span className="text-xs md:text-sm font-semibold uppercase tracking-wider mb-1">
+              👇 Choose Your Plan Here 👇
+            </span>
+            <span className="text-lg md:text-xl font-display font-black">
+              Canva Pro Plans Starting at ₹49
+            </span>
+          </div>
+          <ChevronUp className="h-6 w-6 animate-bounce" />
         </button>
       )}
 
       {/* Expanded State */}
       {isExpanded && (
-        <div className="bg-background border-t-2 border-primary shadow-2xl max-h-[85vh] overflow-y-auto">
+        <div className="bg-white border-t-4 border-purple-600 shadow-2xl max-h-[85vh] overflow-y-auto">
           {/* Header with Close Button */}
-          <div className="sticky top-0 bg-gradient-to-r from-primary via-accent to-primary text-white py-3 px-6 flex items-center justify-between shadow-lg z-10">
-            <h3 className="text-lg md:text-xl font-display font-bold">
-              Choose Your Perfect Plan
-            </h3>
+          <div className="sticky top-0 bg-gradient-to-r from-purple-600 via-pink-600 to-red-600 text-white py-4 px-6 flex items-center justify-between shadow-lg z-10">
+            <div>
+              <h3 className="text-xl md:text-2xl font-display font-bold">
+                Choose Your Perfect Plan
+              </h3>
+              <p className="text-xs md:text-sm text-white/90 mt-1">
+                Select the best option for your creative journey
+              </p>
+            </div>
             <button
               onClick={() => setIsExpanded(false)}
               className="hover:bg-white/20 rounded-full p-2 transition-colors"
@@ -84,7 +100,7 @@ export default function FixedPricingFooter() {
                       Monthly Plan
                     </h4>
                     <p className="text-sm text-muted-foreground">
-                      Manual subscription, renew each month
+                      1 Month Access
                     </p>
                   </div>
 
@@ -104,15 +120,15 @@ export default function FixedPricingFooter() {
                     </li>
                     <li className="flex items-start gap-2">
                       <Check className="h-5 w-5 text-success shrink-0 mt-0.5" />
+                      <span className="text-sm text-foreground">Premium templates</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <Check className="h-5 w-5 text-success shrink-0 mt-0.5" />
                       <span className="text-sm text-foreground">Instant activation</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <Check className="h-5 w-5 text-success shrink-0 mt-0.5" />
                       <span className="text-sm text-foreground">24/7 WhatsApp support</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <Check className="h-5 w-5 text-success shrink-0 mt-0.5" />
-                      <span className="text-sm text-foreground">Manual renewal basis</span>
                     </li>
                   </ul>
                 </div>

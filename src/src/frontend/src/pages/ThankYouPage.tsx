@@ -11,12 +11,26 @@ declare global {
 
 export default function ThankYouPage() {
   useEffect(() => {
+    // Parse amount from URL query parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    const amountParam = urlParams.get("amount");
+    
+    // Validate amount - must be one of our 3 plans: 49, 299, or 699
+    let purchaseValue = 299; // Default to yearly plan for backward compatibility
+    
+    if (amountParam) {
+      const parsedAmount = parseInt(amountParam, 10);
+      if (parsedAmount === 49 || parsedAmount === 299 || parsedAmount === 699) {
+        purchaseValue = parsedAmount;
+      }
+    }
+    
     // Fire Meta Pixel Purchase event only once per successful payment
     const hasTrackedPurchase = sessionStorage.getItem("purchase_tracked");
     
     if (!hasTrackedPurchase && window.fbq) {
       window.fbq("track", "Purchase", {
-        value: 299,
+        value: purchaseValue,
         currency: "INR",
       });
       sessionStorage.setItem("purchase_tracked", "true");
